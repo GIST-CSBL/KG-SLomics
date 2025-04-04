@@ -9,3 +9,15 @@ KG-SLomics is available at https://github.com/GIST-CSBL/KG-SLomics.
 
 ## Overview
 ![Overview_20250123](https://github.com/user-attachments/assets/c2b70dec-dcff-4ff0-a68a-69591d21cfbc)
+
+## Requirements
+numpy                     1.24.3
+pandas                    2.2.3
+torch                     2.6.0
+torch-cluster             1.6.3+pt21cu118
+torch-geometric           2.6.1 
+torch-scatter             2.1.2+pt21cu118
+torch-sparse              0.6.18+pt21cu118
+torch-spline-conv         1.2.2+pt21cu118
+scikit-learn              1.6.1
+scipy                     1.15.2 
