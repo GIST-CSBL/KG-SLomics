@@ -1,4 +1,4 @@
-# KG-SLomics: KG-SLomics: Synthetic Lethality Prediction Using Knowledge Graph and Cancer Type-Specific Multiomics Integrated Graph Neural Network
+# KG-SLomics: Synthetic Lethality Prediction Using Knowledge Graph and Cancer Type-Specific Multiomics Integrated Graph Neural Network
 
 by Songyeon Lee, Hojung Nam
 
