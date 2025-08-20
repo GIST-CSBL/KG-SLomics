@@ -1,15 +1,11 @@
-import numpy as np
-import pandas as pd
-import random
-import os
-import argparse
-import sklearn
-from sklearn import preprocessing
-from sklearn.metrics import f1_score, roc_auc_score, average_precision_score, confusion_matrix, roc_curve, precision_recall_curve, auc
-from sklearn.model_selection import StratifiedKFold
 import scipy
 import pickle
 from tqdm import tqdm
+import argparse
+
+import sklearn
+from sklearn import preprocessing
+from sklearn.metrics import f1_score, roc_auc_score, average_precision_score, confusion_matrix, roc_curve, precision_recall_curve, auc
 
 import torch
 from torch import nn, optim
@@ -19,20 +15,16 @@ import torch.nn as nn
 from pytorchtools import EarlyStopping
 
 from torch_geometric import seed_everything
-from torch_geometric.loader import LinkNeighborLoader, ImbalancedSampler
+from torch_geometric.loader import LinkNeighborLoader
 
 from model import *
 from utils import *
 from data_preparation import *
 
 
-if torch.cuda.is_available():
-    device = torch.device("cuda")
-    torch.cuda.set_device(device)
-    print(f"Using GPU: {torch.cuda.get_device_name(device)}")
-else:
-    device = torch.device("cpu")
-    print("Using CPU")
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
+torch.cuda.set_device('cuda:0')
+if device=="cuda": torch.cuda.empty_cache()
 
 np.random.seed(seed=1234)
 torch.manual_seed(1234)
@@ -41,7 +33,6 @@ seed_everything(1234)
 
 # Experimental settings
 parser = argparse.ArgumentParser()
-
 parser.add_argument('--lr', type=float, default=1e-4, help='Learning rate')
 parser.add_argument('--dropout', type=float, default=0.3, help='Dropout rate')
 parser.add_argument('--num_epochs', type=int, default=200, help='Maximum number of epochs')
@@ -53,7 +44,6 @@ parser.add_argument('--es', type=int, default=10, help='Early Stopping patience'
 parser.add_argument('--splitby', type=str, default='pair', help='Split the dataset by pair or gene (input: pair | gene)')
 parser.add_argument('--negratio', type=int, default=1, help='Ratio of negative gene pairs')
 args = parser.parse_args()
-
 
 
 def train(args):
@@ -218,10 +208,10 @@ if __name__ == "__main__":
         print(f'FOLD {fold}')
         
         if args.splitby == 'pair':
-            kf_train_data, kf_val_data, kf_test_data = generate_complete_SLpDataset(tr_folds[fold], val_folds[fold], ts_folds[fold])
+            kf_train_data, kf_val_data, kf_test_data = generate_complete_SLpDataset(tr_folds[fold], val_folds[fold], ts_folds[fold], args)
             
         elif args.splitby == 'gene':
-            kf_train_data, kf_val_data, kf_test_data = generate_complete_SLgDataset(tr_folds[fold], val_folds[fold], ts_folds[fold])
+            kf_train_data, kf_val_data, kf_test_data = generate_complete_SLgDataset(tr_folds[fold], val_folds[fold], ts_folds[fold], args)
             
         else:
             print('Please insert the valid parameter; pair or gene')
@@ -244,8 +234,6 @@ if __name__ == "__main__":
         val_df.to_csv('./CV/Fold'+str(fold)+'_val.csv', index=False)
         ts_df.to_csv('./CV/Fold'+str(fold)+'_ts.csv', index=False)
 
-        #tr_sampler=ImbalancedSampler(dataset = kf_train_data.edge_label)
-    
         train_loader = LinkNeighborLoader(kf_train_data, edge_label_index=kf_train_data.edge_label_index, edge_label=kf_train_data.edge_label,
                                           batch_size=args.batch, shuffle=True, neg_sampling_ratio=0.0, num_neighbors=[32,32]) #args.n_neighbors, -1
         val_loader = LinkNeighborLoader(kf_val_data, edge_label_index=kf_val_data.edge_label_index, edge_label=kf_val_data.edge_label,

@@ -42,22 +42,21 @@ class MyModel(torch.nn.Module):
         
         #MLPs for SL prediction module
         self.fc1 = torch.nn.Linear(out_channels*2, out_channels)
-        self.fc2 = torch.nn.Linear(out_channels, int(out_channels/2))
-        self.fc3 = torch.nn.Linear(int(out_channels/2), 1)
+        self.fc2 = torch.nn.Linear(out_channels, 1)
         
         self.act=nn.LeakyReLU()
         self.dropout=nn.Dropout(args.dropout)
         
         # GAT
-        #self.conv1 = GATConv(in_channels, out_channels = (hidden_channels // args.heads), heads=args.heads) # in_channel, hidden_channel, heads
-        #self.conv2 = GATConv(hidden_channels, out_channels//4, heads=4, concat=True) # hidden_channel * heads, out_channel, heads
-        
         self.conv1 = RGATConv(in_channels, hidden_channels//args.heads, num_relations, heads=args.heads) # in_channel, hidden_channel, heads
         self.conv2 = RGATConv(hidden_channels, out_channels//args.heads, num_relations, heads=args.heads, concat=True) # hidden_channel * heads, out_channel, heads
-        self.lin = torch.nn.Linear(in_channels, out_channels)
+        self.skip_connection = torch.nn.Sequential(
+            torch.nn.Linear(in_channels, hidden_channels), 
+            torch.nn.LeakyReLU(), 
+            torch.nn.Linear(hidden_channels, out_channels))
 
 
-    def forward(self, kg_emb, ccle, node_id, neighbor_cl_ids, edge_index, edge_type): #모델이 입력으로 받는 부분
+    def forward(self, kg_emb, ccle, node_id, neighbor_cl_ids, edge_index, edge_type):
 
         x_dict, attn1_dict, attn2_dict = {}, {}, {} # = {} #
 
@@ -65,12 +64,12 @@ class MyModel(torch.nn.Module):
         for e_i_class in torch.unique(neighbor_cl_ids):
             ccle[int(e_i_class.item())] = self.ccle_layer(ccle[int(e_i_class.item())], edge_index)
             
-            x = torch.cat((kg_emb[node_id], ccle[int(e_i_class.item())][node_id]), dim=1) #(107940, 256) -> 병합
+            x = torch.cat((kg_emb[node_id], ccle[int(e_i_class.item())][node_id]), dim=1) 
             x, (edge_index_1, a_1) = self.conv1(x, edge_index, edge_type, return_attention_weights=True) #
             x = self.act(x) #+self.norm1(x_1)
             x = self.dropout(x)
             x, (edge_index_2, a_2) = self.conv2(x, edge_index, edge_type, return_attention_weights=True) #
-            x = x + self.lin(torch.cat((kg_emb[node_id], ccle[int(e_i_class.item())][node_id]), dim=1))
+            x = x + self.skip_connection(torch.cat((kg_emb[node_id], ccle[int(e_i_class.item())][node_id]), dim=1))
 
             x_dict[int(e_i_class.item())] = x
             attn1_dict[int(e_i_class.item())] = (edge_index_1, a_1)
@@ -86,8 +85,6 @@ class MyModel(torch.nn.Module):
         x = self.fc1(x)
         x = self.act(x)
         x = self.fc2(x)
-        x = self.act(x)
-        x = self.fc3(x)
             
         return x.squeeze(dim=1)
 
