@@ -8,6 +8,11 @@ by Songyeon Lee, Hojung Nam
 ## Overview
 <img width="2472" height="1747" alt="Overview_20250910" src="https://github.com/user-attachments/assets/b5d20951-936d-4110-bafb-9ff7fab8119c" />
 
+## Data preparation
+To prevent any issues with the license, please visit the official website for each input data source.
+- CCLE multiomics data: DepMap portal (https://depmap.org/portal/data_page/?tab=allData and select the version 'DepMap Publich 24Q2' for the reproduction of input data)
+- SL data: SLKB (https://slkb.osubmi.org/)
+- TCGA patients clinical samples: cBioPortal (https://www.cbioportal.org/study/summary?id=pancan_pcawg_2020) and UCSC Xena (https://xenabrowser.net/datapages/?cohort=PCAWG%20(specimen%20centric)&addHub=https%3A%2F%2Fpcawg.xenahubs.net&removeHub=https%3A%2F%2Fxena.treehouse.gi.ucsc.edu%3A443)
 
 ## Requirements
 numpy                     1.24.3 <br/>
