@@ -6,7 +6,8 @@ by Songyeon Lee, Hojung Nam
 > Synthetic lethality (SL) is a phenomenon in which the simultaneous alterations of two genes evoke cell death, whereas a mutation of either gene alone does not adversely affect cell survival. After the clinical application of PARP inhibitors, SL has been a promising strategy for the undruggable cancer mutations by targeting their alternative partner genes. While the various statistical and computational methods can predict SL pairs, they often miss key challenges: variation across cancer types and reliance on outdated networks or gene-specific data that ignore cancer-specific features. Recent progress addresses these gaps but struggles to generalize across multiple cancer types. In this paper, we propose KG-SLomics, a relational graph attention network-based model that predicts SL using an extensively updated knowledge graph (KG) and multiple cancer cell line data. We construct a comprehensive KG incorporating newly curated biological entities, tripling its size compared to previous versions. Pre-trained KG embeddings are combined with multiomics data to capture topological and cancer-specific features. Through relational message passing, KG-SLomics calculates SL probabilities with high accuracy, allocating high attention scores to the relevant entities in KG. It outperformed advanced baselines in various evaluations and suggested novel therapeutic targets, underscoring its clinical potential.
 
 ## Overview
-[Fig1_Overview_renew.tif](https://github.com/user-attachments/files/22586813/Fig1_Overview_renew.tif)
+<img width="2472" height="1747" alt="Overview_20250910" src="https://github.com/user-attachments/assets/b5d20951-936d-4110-bafb-9ff7fab8119c" />
+
 
 ## Requirements
 numpy                     1.24.3 <br/>
