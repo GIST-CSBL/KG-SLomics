@@ -17,7 +17,7 @@ from pytorchtools import EarlyStopping
 from torch_geometric import seed_everything
 from torch_geometric.loader import LinkNeighborLoader
 
-from model_subgraph import *
+from model import *
 from utils import *
 from data_preparation import *
 
